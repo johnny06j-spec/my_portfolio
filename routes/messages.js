@@ -5,9 +5,11 @@ import { verifyToken } from './auth.js';
 
 const router = express.Router();
 
-// Transporter setup for email dispatch
+// Transporter setup for email dispatch (Port 465 SSL prevents Render ETIMEDOUT)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER, // Your Gmail address
     pass: process.env.EMAIL_PASS  // Gmail App Password
@@ -52,7 +54,7 @@ router.post('/', async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
-    console.error('Contact Form Error:', err);
+    console.error('Contact Form / Nodemailer Error:', err.message || err);
     res.status(500).json({ error: 'Failed to process message. Please try again.' });
   }
 });
