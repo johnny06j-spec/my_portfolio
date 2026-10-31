@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import projectRoutes from './routes/projects.js';
 import profileRoutes from './routes/profile.js';
 import aboutPostsRoutes from './routes/aboutPosts.js';
+import messageRoutes from './routes/messages.js';
 
 dotenv.config();
 
@@ -38,20 +39,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/about-posts', aboutPostsRoutes);
+app.use('/api/messages', messageRoutes);
 
 // Health Check Route
 app.get('/', (req, res) => {
   res.json({ message: 'Portfolio API Backend with MongoDB & Admin Auth is running!' });
-});
-
-// Contact Endpoint
-app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'Please fill in all fields.' });
-  }
-  console.log('New Contact Message:', { name, email, message });
-  res.status(200).json({ success: true, message: 'Message received successfully!' });
 });
 
 app.listen(PORT, () => {
