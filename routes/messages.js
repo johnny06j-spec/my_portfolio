@@ -1,7 +1,7 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
 import Message from '../models/Message.js';
-import { verifyToken } from '../routes/auth.js';
+import { verifyToken } from './auth.js';
 
 const router = express.Router();
 
