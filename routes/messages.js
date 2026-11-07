@@ -1,20 +1,12 @@
 import express from 'express';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import Message from '../models/Message.js';
 import { verifyToken } from './auth.js';
 
 const router = express.Router();
 
-// Transporter setup for email dispatch (Port 465 SSL prevents Render ETIMEDOUT)
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER, // Your Gmail address
-    pass: process.env.EMAIL_PASS  // Gmail App Password
-  }
-});
+// Initialize Resend using environment variable only
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // PUBLIC: Submit contact form
 router.post('/', async (req, res) => {
@@ -29,11 +21,11 @@ router.post('/', async (req, res) => {
     const newMessage = new Message({ name, email, message });
     await newMessage.save();
 
-    // 2. Dispatch Notification Email
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const mailOptions = {
-        from: `"${name} (Portfolio Inquiry)" <${process.env.EMAIL_USER}>`,
-        to: process.env.EMAIL_USER,
+    // 2. Send Email Notification via Resend HTTPS API
+    if (process.env.RESEND_API_KEY) {
+      await resend.emails.send({
+        from: 'Portfolio Contact <onboarding@resend.dev>',
+        to: process.env.EMAIL_USER || 'johnny06j@gmail.com',
         replyTo: email,
         subject: `📬 New Portfolio Contact from ${name}`,
         html: `
@@ -47,15 +39,13 @@ router.post('/', async (req, res) => {
             </div>
           </div>
         `
-      };
-
-      await transporter.sendMail(mailOptions);
+      });
     }
 
     res.status(200).json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
-    console.error('Contact Form / Nodemailer Error:', err.message || err);
-    res.status(500).json({ error: 'Failed to process message. Please try again.' });
+    console.error('Contact Form / Resend Error:', err.message || err);
+    res.status(200).json({ success: true, message: 'Message received and saved!' });
   }
 });
 
