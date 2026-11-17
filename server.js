@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import projectRoutes from './routes/projects.js';
 import profileRoutes from './routes/profile.js';
 import aboutPostsRoutes from './routes/aboutPosts.js';
+import blogPostsRoutes from './routes/blogPosts.js';
 import messageRoutes from './routes/messages.js';
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/about-posts', aboutPostsRoutes);
+app.use('/api/blog-posts', blogPostsRoutes);
 app.use('/api/messages', messageRoutes);
 
 // Health Check Route
