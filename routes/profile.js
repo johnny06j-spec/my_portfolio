@@ -21,6 +21,7 @@ router.post(
   upload.fields([
     { name: 'avatar', maxCount: 1 },
     { name: 'banner', maxCount: 1 },
+    { name: 'cv', maxCount: 1 },
   ]),
   async (req, res) => {
     try {
@@ -29,11 +30,13 @@ router.post(
 
       if (req.files?.avatar?.[0]) profile.avatarUrl = req.files.avatar[0].path;
       if (req.files?.banner?.[0]) profile.bannerUrl = req.files.banner[0].path;
+      if (req.files?.cv?.[0]) profile.cvUrl = req.files.cv[0].path;
       if (req.body.bioShort !== undefined) profile.bioShort = req.body.bioShort;
 
       await profile.save();
       res.json({ success: true, profile });
     } catch (err) {
+      console.error('Profile update error:', err);
       res.status(500).json({ error: 'Failed to update profile header' });
     }
   }

@@ -15,6 +15,21 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     const isVideo = file.mimetype.startsWith('video');
+    const isDocument =
+      file.fieldname === 'cv' ||
+      file.mimetype === 'application/pdf' ||
+      file.mimetype === 'application/msword' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+    if (isDocument) {
+      return {
+        folder: 'portfolio_documents',
+        resource_type: 'raw',
+        allowed_formats: ['pdf', 'doc', 'docx'],
+        public_id: `cv_${Date.now()}_${file.originalname.replace(/\s+/g, '_')}`,
+      };
+    }
+
     return {
       folder: 'portfolio_projects',
       resource_type: isVideo ? 'video' : 'image',
