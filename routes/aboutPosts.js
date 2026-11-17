@@ -154,16 +154,51 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// LIKE endpoint
+// LIKE / UNLIKE TOGGLE endpoint (1 like per visitorId)
 router.post('/:id/like', async (req, res) => {
   try {
+    const { visitorId } = req.body;
     const post = await AboutPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
-    post.likes += 1;
+
+    if (!Array.isArray(post.likedBy)) post.likedBy = [];
+
+    let liked = false;
+    if (visitorId) {
+      const existingIndex = post.likedBy.indexOf(visitorId);
+      if (existingIndex > -1) {
+        post.likedBy.splice(existingIndex, 1);
+        post.likes = Math.max(0, (post.likes || 0) - 1);
+        liked = false;
+      } else {
+        post.likedBy.push(visitorId);
+        post.likes = (post.likes || 0) + 1;
+        liked = true;
+      }
+    } else {
+      post.likes = (post.likes || 0) + 1;
+      liked = true;
+    }
+
     await post.save();
-    res.json({ success: true, likes: post.likes });
+    res.json({ success: true, likes: post.likes, liked });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to like post' });
+    res.status(500).json({ error: 'Failed to toggle like' });
+  }
+});
+
+// VISIBILITY / VIEWS INCREMENT endpoint
+router.post('/:id/view', async (req, res) => {
+  try {
+    const post = await AboutPost.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    res.json({ success: true, views: post.views });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to record view' });
   }
 });
 

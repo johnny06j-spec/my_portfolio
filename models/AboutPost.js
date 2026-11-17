@@ -20,16 +20,18 @@ const threadItemSchema = new mongoose.Schema({
 
 const aboutPostSchema = new mongoose.Schema(
   {
-    content: { type: String, required: true }, // Main/First post in thread
+    content: { type: String, required: true },
     media: [
       {
         url: { type: String, required: true },
         resourceType: { type: String, enum: ['image', 'video'], default: 'image' },
       },
     ],
-    threadItems: [threadItemSchema], // Subsequent thread posts
+    threadItems: [threadItemSchema],
     pinOrder: { type: Number, default: 0 },
     likes: { type: Number, default: 0 },
+    likedBy: [{ type: String }],
+    views: { type: Number, default: 0 },
     comments: [commentSchema],
   },
   { timestamps: true }
