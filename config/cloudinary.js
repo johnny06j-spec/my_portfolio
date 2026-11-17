@@ -25,8 +25,7 @@ const storage = new CloudinaryStorage({
       return {
         folder: 'portfolio_documents',
         resource_type: 'raw',
-        allowed_formats: ['pdf', 'doc', 'docx'],
-        public_id: `cv_${Date.now()}_${file.originalname.replace(/\s+/g, '_')}`,
+        public_id: `cv_${Date.now()}_${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
       };
     }
 
