@@ -202,16 +202,20 @@ router.post('/:id/view', async (req, res) => {
   }
 });
 
-// COMMENT endpoint
+// COMMENT endpoint (with Google visitor avatar support)
 router.post('/:id/comment', async (req, res) => {
   try {
-    const { author, text } = req.body;
+    const { author, avatar, text } = req.body;
     if (!text) return res.status(400).json({ error: 'Comment text is required' });
 
     const post = await AboutPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    post.comments.push({ author: author || 'Visitor', text });
+    post.comments.push({
+      author: author || 'Visitor',
+      avatar: avatar || '',
+      text,
+    });
     await post.save();
     res.json({ success: true, comments: post.comments });
   } catch (err) {

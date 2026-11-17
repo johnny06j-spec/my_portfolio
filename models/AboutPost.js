@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema(
   {
     author: { type: String, default: 'Visitor' },
+    avatar: { type: String, default: '' },
     text: { type: String, required: true },
   },
   { timestamps: true }
